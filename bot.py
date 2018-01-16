@@ -17,7 +17,7 @@ class Bot(commands.AutoShardedBot):
 
     async def on_ready(self):
         print('Logged on as {0} (ID: {0.id})'.format(self.user))
-        await bot.change_presence(game=discord.Game(name="=>help | Akarin!")
+        await bot.change_presence(game=discord.Game(name="=>help | Akarin!"))
 
 
 bot = Bot()
