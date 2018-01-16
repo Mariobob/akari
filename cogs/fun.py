@@ -4,6 +4,9 @@ from discord.ext import commands
 import discord
 import wolframalpha
 import random
+from osuapi import OsuApi, AHConnector
+import aiohttp
+import asyncio
 
 class Fun:
     """Fun stuff."""
@@ -13,6 +16,14 @@ class Fun:
         self.config = bot.config
         self.client = wolframalpha.Client(bot.config.app_id)
         self.invalid_strings = ["Nobody knows.", "It's a mystery.", "I have no idea.", "No clue, sorry!", "I'm afraid I can't let you do that.", "Maybe another time.", "Ask someone else.", "That is anybody's guess.", "Beats me.", "I haven't the faintest idea."]
+
+
+    @commands.command()
+    async def osu(self, ctx, *, user):
+        api = OsuApi(self.config.osu, connector=AHConnector())
+        results = await api.get_user(user)
+        await ctx.send(str(results))
+
 
     @commands.command()
     async def wolfram(self, ctx, *, query):
