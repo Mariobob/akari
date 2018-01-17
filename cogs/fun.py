@@ -21,7 +21,7 @@ class Fun:
     async def osu(self, ctx, user):
         async with ClientSession() as session:
             async with session.get(f'https://osu.ppy.sh/api/get_user?k={self.config.osu}&u={user}') as response:
-                resp = await response.json()
+                resp = await response.text()
         await ctx.send(resp)
 
     @commands.command()
