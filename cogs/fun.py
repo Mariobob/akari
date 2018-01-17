@@ -16,12 +16,17 @@ class Fun:
         self.client = wolframalpha.Client(bot.config.app_id)
         self.invalid_strings = ["Nobody knows.", "It's a mystery.", "I have no idea.", "No clue, sorry!", "I'm afraid I can't let you do that.", "Maybe another time.", "Ask someone else.", "That is anybody's guess.", "Beats me.", "I haven't the faintest idea."]
 
+        async def get(self, url, head=None):
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=head) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        return data
+                    return response.status
 
     @commands.command()
     async def osu(self, ctx, user):
-        async with ClientSession() as session:
-            async with session.get(f'https://osu.ppy.sh/api/get_user?k={self.config.osu}&u={user}') as response:
-                resp = await response.text()
+        resp = await get(url=f'https://osu.ppy.sh/api/get_user?k={self.config.osu}&u={user}')
         await ctx.send(resp)
 
     @commands.command()
