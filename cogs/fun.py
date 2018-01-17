@@ -21,8 +21,8 @@ class Fun:
     async def osu(self, ctx, user):
         async with ClientSession() as session:
             async with session.get(f'https://osu.ppy.sh/api/get_user?k={self.config.osu}&u={user}') as response:
-                response = await response.read()
-        await ctx.send(response.dict())
+                response = await response.dict()
+        await ctx.send(response)
 
     @commands.command()
     async def wolfram(self, ctx, *, query):
