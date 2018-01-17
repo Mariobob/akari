@@ -4,8 +4,7 @@ from discord.ext import commands
 import discord
 import wolframalpha
 import random
-from osuapi import OsuApi, AHConnector
-import aiohttp
+from aiohttp import ClientSession
 import asyncio
 
 class Fun:
@@ -19,11 +18,11 @@ class Fun:
 
 
     @commands.command()
-    async def osu(self, ctx, *, user):
-        api = OsuApi(self.config.osu, connector=AHConnector())
-        results = await api.get_user(user)
-        await ctx.send(str(results))
-
+    async def osu(self, ctx, user):
+        async with ClientSession() as session:
+            async with session.get(f'https://osu.ppy.sh/api/get_user?k={self.config.osu}&u={user}') as response:
+                response = await response.read()
+        await ctx.send(response.dict())
 
     @commands.command()
     async def wolfram(self, ctx, *, query):
