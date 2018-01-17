@@ -4,6 +4,8 @@
 from discord.ext import commands
 import discord
 import config
+import aiohttp
+import asyncio
 
 class Bot(commands.AutoShardedBot):
     def __init__(self, **kwargs):
@@ -19,7 +21,16 @@ class Bot(commands.AutoShardedBot):
         print('Logged on as {0} (ID: {0.id})'.format(self.user))
         await bot.change_presence(game=discord.Game(name="=>help | Akarin!"))
 
-
 bot = Bot()
 
+async def update_types():
+    await bot.wait_until_ready()
+    while not bot.is_closed():
+        async with aiohttp.ClientSession() as session:
+            head = {'Authorization': f'Bearer {bot.config.weebsh}'}
+            async with session.get(url='https://api.weeb.sh/images/types', headers=head) as response:
+                bot.config.weebtypes = await response.json()
+            await asyncio.sleep(1800) # sleeps every 30 minutes
+
+bot.loop.create_task(update_types())
 bot.run(config.token)
