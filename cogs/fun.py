@@ -4,7 +4,7 @@ from discord.ext import commands
 import discord
 import wolframalpha
 import random
-from aiohttp import ClientSession
+import aiohttp
 import asyncio
 import functools
 
@@ -27,7 +27,7 @@ class Fun:
                                 "I haven't the faintest idea."]
         
     async def get(self, url, head=None):
-        async with ClientSession() as session:
+        async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=head) as response:
                 if response.status == 200:
                     data = await response.json()
