@@ -6,6 +6,7 @@ import wolframalpha
 import random
 from aiohttp import ClientSession
 import asyncio
+import functools
 
 class Fun:
     """Fun stuff."""
@@ -14,7 +15,16 @@ class Fun:
         self.bot = bot
         self.config = bot.config
         self.client = wolframalpha.Client(bot.config.app_id)
-        self.invalid_strings = ["Nobody knows.", "It's a mystery.", "I have no idea.", "No clue, sorry!", "I'm afraid I can't let you do that.", "Maybe another time.", "Ask someone else.", "That is anybody's guess.", "Beats me.", "I haven't the faintest idea."]
+        self.invalid_strings = ["Nobody knows.",
+                                "It's a mystery.",
+                                "I have no idea.",
+                                "No clue, sorry!",
+                                "I'm afraid I can't let you do that.",
+                                "Maybe another time.",
+                                "Ask someone else.",
+                                "That is anybody's guess.",
+                                "Beats me.",
+                                "I haven't the faintest idea."]
         
     async def get(self, url, head=None):
         async with ClientSession() as session:
@@ -55,32 +65,40 @@ class Fun:
                 e.set_footer(text='Powered by weeb.sh')
                 await ctx.send(embed=e)
             else:
-                await ctx.send('oof')
                 await ctx.send(f'```{types}```')
         else:
             await ctx.send(content=f'```{types}```')
 
     @commands.command()
     async def osu(self, ctx, user):
-        resp = await self.get(url=f'https://osu.ppy.sh/api/get_user?k={self.config.osu}&u={user}')[0]
-        username = resp['username']
-        userid = resp['user_id']
-        accuracy = str(round(int(resp['accuracy']))) + '%'
-        timesplayed = resp['playcount']
-        country = resp['country']
-        pp = resp['pp_ranked']
-        level = resp['level']
-        ranked_score = resp['ranked_score']
-        total_score = resp['total_score']
-        await ctx.send(resp)
+        try:
+            resp = await self.get(url=f'https://osu.ppy.sh/api/get_user?k={self.config.osu}&u={user}')[0]
+            username     = resp.get('username', 'Error occured')
+            userid       = resp.get('user_id', 'Error occured')
+            accuracy     = f'{round(int(resp.get("accuracy", "0")))}%'
+            timesplayed  = resp.get('play')
+            country      = resp.get('country')
+            pp           = resp.get('pp_ranked')
+            level        = resp.get('level')
+            ranked_score = resp.get('ranked_score')
+            total_score  = resp.get('total_score')
+            await ctx.send(resp)
+        except Exception as e:
+            await ctx.send(f'S-something went wrong!\n```py\n{e}```')
+        
 
     @commands.command()
     async def wolfram(self, ctx, *, query):
         """Query Wolfram Alpha."""
-        res = self.client.query(query)
+        def q(query):
+            res = self.client.query(query)
+            return res
+        async def async_q():
+            thing = functools.partial(q, query)
+            res = await bot.loop.run_in_executor(None, thing)
+        
         e = discord.Embed(title="Wolfram|Alpha", description="", color=ctx.author.color)
         def invalid():
-            """Invalidates a query"""
             e.add_field(name="Query", value=query, inline=False)
             e.add_field(name="Result", value=random.choice(self.invalid_strings)+"`(Invalid or undefined query)`", inline=False)
         try:
