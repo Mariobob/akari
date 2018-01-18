@@ -76,12 +76,12 @@ class Fun:
             username     = resp.get('username', 'Error occured')
             userid       = resp.get('user_id', 'Error occured')
             accuracy     = f'{round(int(resp.get("accuracy", "0")))}%'
-            timesplayed  = resp.get('play')
-            country      = resp.get('country')
-            pp           = resp.get('pp_ranked')
-            level        = resp.get('level')
-            ranked_score = resp.get('ranked_score')
-            total_score  = resp.get('total_score')
+            timesplayed  = resp.get('play', 'Error occured')
+            country      = resp.get('country', 'Error occured')
+            pp           = resp.get('pp_ranked', 'Error occured')
+            level        = resp.get('level', 'Error occured')
+            ranked_score = resp.get('ranked_score', 'Error occured')
+            total_score  = resp.get('total_score', 'Error occured')
             await ctx.send(resp)
         except Exception as e:
             await ctx.send(f'S-something went wrong!\n```py\n{e}```')
