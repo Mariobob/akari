@@ -32,7 +32,7 @@ class Fun:
                 if response.status == 200:
                     data = await response.json()
                     return data
-                return response.status
+                raise response.status
 
     @commands.command()
     async def cat(self, ctx):
