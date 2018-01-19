@@ -72,19 +72,22 @@ class Fun:
     @commands.command()
     async def osu(self, ctx, user):
         try:
-            resp = await self.get(url=f'https://osu.ppy.sh/api/get_user?k={self.config.osu}&u={user}')[0]
-            username     = resp.get('username', 'Error occured')
-            userid       = resp.get('user_id', 'Error occured')
-            accuracy     = f'{round(int(resp.get("accuracy", "0")))}%'
-            timesplayed  = resp.get('play', 'Error occured')
-            country      = resp.get('country', 'Error occured')
-            pp           = resp.get('pp_ranked', 'Error occured')
-            level        = resp.get('level', 'Error occured')
-            ranked_score = resp.get('ranked_score', 'Error occured')
-            total_score  = resp.get('total_score', 'Error occured')
-            await ctx.send(resp)
+            respraw = await self.get(url=f'https://osu.ppy.sh/api/get_user?k={self.config.osu}&u={user}')
+            resp = respraw[0]
         except Exception as e:
             await ctx.send(f'S-something went wrong!\n```py\n{e}```')
+        username     = resp.get('username', 'Error occured')
+        userid       = resp.get('user_id', 'Error occured')
+        accuracy     = f'{round(float(resp.get("accuracy", "0")))}%'
+        timesplayed  = resp.get('play', 'Error occured')
+        country      = resp.get('country', 'Error occured')
+        pp           = resp.get('pp_ranked', 'Error occured')
+        level        = resp.get('level', 'Error occured')
+        ranked_score = resp.get('ranked_score', 'Error occured')
+        total_score  = resp.get('total_score', 'Error occured')
+        e = discord.Embed(title=f'osu! stats for {username}', description='osu! stats\n', color=ctx.author.color)
+        await ctx.send(embed=e)
+
         
 
     @commands.command()
@@ -93,10 +96,10 @@ class Fun:
         def q(query):
             res = self.client.query(query)
             return res
-        async def async_q():
+        async def async_q(query):
             thing = functools.partial(q, query)
-            res = await bot.loop.run_in_executor(None, thing)
-        
+            return await self.bot.loop.run_in_executor(None, thing)
+        res = await async_q(query)
         e = discord.Embed(title="Wolfram|Alpha", description="", color=ctx.author.color)
         def invalid():
             e.add_field(name="Query", value=query, inline=False)
