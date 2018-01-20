@@ -23,6 +23,10 @@ class Bot(commands.AutoShardedBot):
 
 bot = Bot()
 
+with open('blacklist.txt') as f:
+    bot.config.blacklist = f.readlines()
+    bot.config.blacklist = [f.strip() for f in bot.config.blacklist] 
+
 async def update_types():
     await bot.wait_until_ready()
     while not bot.is_closed():

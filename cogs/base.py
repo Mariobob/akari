@@ -19,10 +19,6 @@ class Base:
     async def ping(self, ctx):
         await ctx.send(f'p-pong! ({round(self.bot.latency*1000)}ms)')
 
-    @commands.command(aliases=['about'])
-    async def info(self, ctx):
-        e = discord.Embed(title="Akari", color=ctx.author.color, url="https://akaribot.tk")
-
     # Owner Stuff
 
     def cleanup_code(self, content):
