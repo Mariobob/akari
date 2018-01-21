@@ -53,27 +53,6 @@ class Fun:
         await ctx.send(embed=e)
 
     @commands.command()
-    async def neko(self, ctx):
-        '''Gets a random neko :3'''
-        e = discord.Embed(color=ctx.author.color)
-        resp = await self.get(url='https://nekos.life/api/neko')
-        e.set_image(url=resp['neko'])
-        e.set_footer(text='Powered by nekos.life')
-        await ctx.send(embed=e)
-
-    @commands.command()
-    @commands.is_nsfw()
-    async def lewdneko(self, ctx):
-        '''Gets a random lewd neko o.o'''
-        e = discord.Embed(color=ctx.author.color)
-        resp = await self.get(url='https://nekos.life/api/lewd/neko')
-        e.set_image(url=resp['neko'])
-        e.set_footer(text='Powered by nekos.life')
-        await ctx.send(embed=e)
-
-
-
-    @commands.command()
     async def weeb(self, ctx, type=None):
         '''Fetch a type from weeb.sh. Call without args to get a list of types.'''
         head = {'Authorization': f'Bearer {self.config.weebsh}'}

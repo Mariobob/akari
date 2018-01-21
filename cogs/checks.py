@@ -40,7 +40,6 @@ class Checks:
             await self.save_blacklist(blacklist)
             await ctx.send(f'Added {user.name} to blacklist')
 
-
     @blacklist.command()
     async def remove(self, ctx, user: discord.User):
         blacklist = self.config.blacklist
