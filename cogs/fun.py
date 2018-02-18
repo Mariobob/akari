@@ -91,7 +91,7 @@ class Fun:
             await ctx.send(content=f'```{types}```')
 
     @commands.command()
-    async def osu(self, ctx, user):
+    async def osu(self, ctx, *, user):
         try:
             respraw = await self.get(url=f'https://osu.ppy.sh/api/get_user?k={self.config.osu}&u={user}')
             resp = respraw[0]
@@ -99,14 +99,30 @@ class Fun:
             await ctx.send(f'S-something went wrong!\n```py\n{e}```')
         username     = resp.get('username', 'Error occured')
         userid       = resp.get('user_id', 'Error occured')
-        accuracy     = f'{round(float(resp.get("accuracy", "0")))}%'
-        timesplayed  = resp.get('play', 'Error occured')
+        try:
+            acc = resp.get('accuracy', '0')
+            accuracy = f'{round(float(acc))}%'
+        except:
+            accuracy = 'Not Available'
+        timesplayed  = resp.get('playcount', 'Error occured')
         country      = resp.get('country', 'Error occured')
-        pp           = resp.get('pp_ranked', 'Error occured')
+        pp           = resp.get('pp_rank', 'Error occured')
         level        = resp.get('level', 'Error occured')
         ranked_score = resp.get('ranked_score', 'Error occured')
         total_score  = resp.get('total_score', 'Error occured')
+        stats        = {'Username': str(username), 
+                        'ID': str(userid), 
+                        'Accuracy':str(accuracy), 
+                        'Times Played': str(timesplayed), 
+                        'Country':str(country),
+                        'PP':str(pp),
+                        'Level':str(level),
+                        'Ranked Score':str(ranked_score), 
+                        'Total Score':str(total_score),
+                        }
         e = discord.Embed(title=f'osu! stats for {username}', description='osu! stats\n', color=ctx.author.color)
+        for stat in stats:
+            e.add_field(name=stat, value=stats[stat])
         await ctx.send(embed=e)
 
         

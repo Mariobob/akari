@@ -36,5 +36,21 @@ async def update_types():
                 bot.config.weebtypes = await response.json()
             await asyncio.sleep(1800) # sleeps every 30 minutes
 
+async def server_count():
+    await bot.wait_until_ready()
+    while not bot.is_closed():
+        async with aiohttp.ClientSession() as session:
+            payload = {'server_count': len(bot.guilds)}
+            header_one = {'Content-Type': 'application/json', 'Authorization': bot.config.terminal}
+            header_two = {'Content-Type': 'application/json', 'Authorization': bot.config.dbl}
+            # Terminal.Ink
+            await session.post(f'https://ls.terminal.ink/api/v1/bots/{bot.user.id}', json=payload, headers=header_one)
+            # Discord Bot List
+            await session.post(f'https://discordbots.org/api/bots/{bot.user.id}/stats', json=payload, headers=header_two)
+            await asyncio.sleep(1800) # sleeps every 30 minutes
+
+
+bot.loop.create_task(server_count()) # creates background task
+
 bot.loop.create_task(update_types())
 bot.run(config.token)

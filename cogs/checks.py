@@ -51,6 +51,13 @@ class Checks:
         
         await self.save_blacklist(blacklist)
 
+    async def on_guild_join(self, guild):
+        bots = sum(m.bot for m in guild.members)
+        users = guild.member_count - bots
+        
+        if bots > round(3*users/4):
+            await guild.leave()
+
     async def on_command_error(self, ctx, error):
         """The event triggered when an error is raised while invoking a command.
         ctx   : Context
