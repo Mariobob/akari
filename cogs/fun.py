@@ -37,9 +37,21 @@ class Fun:
     @commands.command()
     async def cat(self, ctx):
         '''Get a random cat image.'''
-        e = discord.Embed(color=ctx.author.color)
-        resp = await self.get(url='https://random.cat/meow')
-        e.set_image(url=resp['file'])
+        
+        try:
+            fact = await self.get(url='https://catfact.ninja/fact')
+            e = discord.Embed(color=ctx.author.color, description=fact['fact'])
+        except:
+            self.bot.raven.CaptureException()
+            await ctx.send('Something went wrong while getting your cat fact!')
+        
+        try:
+            resp = await self.get(url='https://random.cat/meow')
+            e.set_image(url=resp['file'])
+        except:
+            self.bot.raven.CaptureException()
+            await ctx.send('Something went wrong while getting your cat image!')
+
         e.set_footer(text='Powered by random.cat')
         await ctx.send(embed=e)
 
@@ -97,6 +109,7 @@ class Fun:
             resp = respraw[0]
         except Exception as e:
             await ctx.send(f'S-something went wrong!\n```py\n{e}```')
+            return
         username     = resp.get('username', 'Error occured')
         userid       = resp.get('user_id', 'Error occured')
         try:
@@ -115,7 +128,7 @@ class Fun:
                         'Accuracy':str(accuracy), 
                         'Times Played': str(timesplayed), 
                         'Country':str(country),
-                        'PP':str(pp),
+                        'PP':pp,
                         'Level':str(level),
                         'Ranked Score':str(ranked_score), 
                         'Total Score':str(total_score),

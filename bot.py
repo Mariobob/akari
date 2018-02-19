@@ -6,10 +6,15 @@ import discord
 import config
 import aiohttp
 import asyncio
+from raven import Client
+
+client = Client('https://26fff40793b8492a9d51ec6c7fa42190:3acee939fbbb4e9e83ce1b0386d19f16@sentry.io/290132')
 
 class Bot(commands.AutoShardedBot):
     def __init__(self, **kwargs):
         self.config = config
+        self.session = aiohttp.ClientSession()
+        self.raven = client
         super().__init__(command_prefix=commands.when_mentioned_or('=>'), **kwargs)
         for cog in config.cogs:
             try:
@@ -39,15 +44,18 @@ async def update_types():
 async def server_count():
     await bot.wait_until_ready()
     while not bot.is_closed():
-        async with aiohttp.ClientSession() as session:
-            payload = {'server_count': len(bot.guilds)}
-            header_one = {'Content-Type': 'application/json', 'Authorization': bot.config.terminal}
-            header_two = {'Content-Type': 'application/json', 'Authorization': bot.config.dbl}
-            # Terminal.Ink
-            await session.post(f'https://ls.terminal.ink/api/v1/bots/{bot.user.id}', json=payload, headers=header_one)
-            # Discord Bot List
-            await session.post(f'https://discordbots.org/api/bots/{bot.user.id}/stats', json=payload, headers=header_two)
-            await asyncio.sleep(1800) # sleeps every 30 minutes
+        try:
+            async with aiohttp.ClientSession() as session:
+                payload = {'server_count': len(bot.guilds)}
+                header_one = {'Content-Type': 'application/json', 'Authorization': bot.config.terminal}
+                header_two = {'Content-Type': 'application/json', 'Authorization': bot.config.dbl}
+                # Terminal.Ink
+                await session.post(f'https://ls.terminal.ink/api/v1/bots/{bot.user.id}', json=payload, headers=header_one)
+                # Discord Bot List
+                await session.post(f'https://discordbots.org/api/bots/{bot.user.id}/stats', json=payload, headers=header_two)
+                await asyncio.sleep(1800) # sleeps every 30 minutes
+        except:
+            client.captureException()
 
 
 bot.loop.create_task(server_count()) # creates background task

@@ -1,3 +1,4 @@
+import asyncio
 import io
 import traceback
 import sys
@@ -5,6 +6,14 @@ import textwrap
 from contextlib import redirect_stdout
 from discord.ext import commands
 import discord
+from cogs.utils import paste
+
+async def run_cmd(cmd: str) -> str:
+    """Runs a subprocess and returns the output."""
+    process = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+    results = await process.communicate()
+    return "".join(x.decode("utf-8") for x in results)
+
 
 class Base:
     """Basic stuff."""
@@ -29,6 +38,18 @@ class Base:
 
         # remove `foo`
         return content.strip('` \n')
+    
+    @commands.command(hidden=True)
+    @commands.is_owner()
+    async def shell(self, ctx, *, command: str):
+        """Run stuff"""
+        with ctx.typing():
+            result = await run_cmd(command)
+            if len(result) >= 1500:
+                pa = await paste.haste(ctx.bot.session, result)
+                await ctx.send(f'`{command}`: Too long for Discord! {pa}')
+            else:
+                await ctx.send(f"`{command}`: ```{result}```\n")
 
     @commands.command(name='echo', hidden=True)
     @commands.is_owner()
