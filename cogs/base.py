@@ -44,17 +44,13 @@ class Base:
     async def shell(self, ctx, *, command: str):
         """Run stuff"""
         with ctx.typing():
+            command = self.cleanup_code(command)
             result = await run_cmd(command)
             if len(result) >= 1500:
                 pa = await paste.haste(ctx.bot.session, result)
                 await ctx.send(f'`{command}`: Too long for Discord! {pa}')
             else:
                 await ctx.send(f"`{command}`: ```{result}```\n")
-
-    @commands.command(name='echo', hidden=True)
-    @commands.is_owner()
-    async def owner_echo(self, ctx, content):
-        await ctx.send(content)
 
     @commands.command(name='load', hidden=True)
     @commands.is_owner()
@@ -133,9 +129,15 @@ class Base:
 
             if ret is None:
                 if value:
+                    if len(value) >= 1500:
+                        pa = await paste.haste(ctx.bot.session, result)
+                        return await ctx.send(f'Too long for Discord! {pa}')
                     await ctx.send(f'```py\n{value}\n```')
             else:
                 self._last_result = ret
+                if len(str(value)+str(ret)) >= 1501:
+                    pa = await paste.haste(ctx.bot.session, f'{value}{ret}')
+                    return await ctx.send(f'Too long for Discord! {pa}')
                 await ctx.send(f'```py\n{value}{ret}\n```')
 
 def setup(bot):
