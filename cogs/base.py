@@ -10,7 +10,7 @@ from cogs.utils import paste
 
 async def run_cmd(cmd: str) -> str:
     """Runs a subprocess and returns the output."""
-    process = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+    process = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE, )
     results = await process.communicate()
     return "".join(x.decode("utf-8") for x in results)
 

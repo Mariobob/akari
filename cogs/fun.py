@@ -3,6 +3,7 @@
 from discord.ext import commands
 import discord
 import wolframalpha
+from cleverwrap import CleverWrap
 import random
 import aiohttp
 import asyncio
@@ -25,6 +26,7 @@ class Fun:
                                 "That is anybody's guess.",
                                 "Beats me.",
                                 "I haven't the faintest idea."]
+        self.cw = CleverWrap(bot.config.cwkey)
         
     async def get(self, url, head=None):
         async with aiohttp.ClientSession() as session:
@@ -33,6 +35,12 @@ class Fun:
                     data = await response.json()
                     return data
                 raise response.status
+
+    @commands.command(aliases=['c', 'cbot'])
+    async def clever(self, ctx, *, message):
+        '''Say something to cleverbot.'''
+        async with ctx.typing():
+            await ctx.send(self.cw.say(message))
 
     @commands.command()
     async def cat(self, ctx):

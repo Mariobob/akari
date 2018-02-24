@@ -73,7 +73,7 @@ class Discrim:
     # It's a converter, not a type annotation in this case
     # noinspection PyTypeChecker
     @commands.command()
-    async def discrim(self, ctx, discriminator: Discriminator,
+    async def discrim(self, ctx, discriminator: Discriminator=None,
                       *, selector: Selector = '='):
         """Search for specific discriminators.
 
@@ -82,6 +82,8 @@ class Discrim:
         It can be >, >=, <=, or <.
 
         Ranges between two numbers hasn't been implemented yet."""
+        if not discriminator:
+            discriminator=int(ctx.author.discriminator)
         if selector == '>':
             p = Pages(ctx, entries=[
                 f'{u.display_name}#{u.discriminator}'
