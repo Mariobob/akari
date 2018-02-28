@@ -52,6 +52,8 @@ class Checks:
         await self.save_blacklist(blacklist)
 
     async def on_guild_join(self, guild):
+        if guild.id == 417837451994988554:
+            return
         bots = sum(m.bot for m in guild.members)
         users = guild.member_count - bots
         
