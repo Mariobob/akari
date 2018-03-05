@@ -28,13 +28,15 @@ class Base:
     async def ping(self, ctx):
         await ctx.send(f'p-pong! ({round(self.bot.latency*1000)}ms)')
 
-    @commands.command(aliases=['botinfo', 'info'])
+    @commands.command(aliases=['info'], name='botinfo')
     async def _display_bot_info(self, ctx):
         e = discord.Embed(color=ctx.author.color, description='A weeb bot for all your weeb needs and whatnot')
         e.set_author(name='Akari - Bot Info', url='https://akaribot.tk', icon_url=ctx.guild.me.avatar_url)
-        e.add_field(name='Owner', value=f'Made by {bot.get_user(266277541646434305).name} with :heart:')
-        e.add_field(name='Library', value='discord.py@rewrite')
-        
+        e.add_field(name='Owner', value=f'Made by {self.bot.get_user(266277541646434305).name} with :heart:')
+        e.add_field(name='Library', value='discord.py@rewrite <:python:418627388310814739>')
+        e.add_field(name='Invite', value='[Click here!](https://discordapp.com/oauth2/authorize?client_id=401578727584301066&permissions=8&scope=bot)')
+        e.add_field(name='Support server', value='[Click here!](https://discord.gg/gSZwzrD)')
+        await ctx.send(embed=e)
 
     # Owner Stuff
 
@@ -47,7 +49,7 @@ class Base:
         # remove `foo`
         return content.strip('` \n')
     
-    @commands.command(hidden=True)
+    @commands.command(hidden=True, aliases=['exec'])
     @commands.is_owner()
     async def shell(self, ctx, *, command: str):
         """Run stuff"""
