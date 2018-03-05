@@ -34,7 +34,21 @@ class Fun:
                 if response.status == 200:
                     data = await response.json()
                     return data
-                raise response.status
+                raise Exception(response.status)
+    
+    @commands.command()
+    async def xkcd(self, ctx, number: int=None):
+        if number and isinstance(number, int):
+            r = await self.get(url=f'https://xkcd.com/{number}/info.0.json')
+        elif number:
+            return await ctx.send('That\'s not a valid number!')
+        else:
+            r = await self.get(url='https://xkcd.com/info.0.json')
+        
+        e = discord.Embed(title=r['safe_title'], description='xkcd - {}\n\n{}'.format(r['num'], r['alt']), color=ctx.author.color)
+        e.set_image(url=r['img'])
+        e.set_footer(text=f'{r["month"]}/{r["day"]}/{r["year"]} (mm/dd/yyyy)', icon_url='https://i.imgur.com/9sSBA52.jpg')
+        await ctx.send(embed=e)
 
     @commands.command(aliases=['c', 'cbot'])
     async def clever(self, ctx, *, message):
@@ -175,3 +189,4 @@ class Fun:
 
 def setup(bot):
     bot.add_cog(Fun(bot))
+# -*- coding: utf-8 -*-
