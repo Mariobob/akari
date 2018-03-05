@@ -36,7 +36,7 @@ async def update_types():
     await bot.wait_until_ready()
     while not bot.is_closed():
         async with aiohttp.ClientSession() as session:
-            head = {'Authorization': f'Bearer {bot.config.weebsh}'}
+            head = {'Authorization': f'Wolke {bot.config.weebsh}'}
             async with session.get(url='https://api.weeb.sh/images/types', headers=head) as response:
                 bot.config.weebtypes = await response.json()
             await asyncio.sleep(1800) # sleeps every 30 minutes

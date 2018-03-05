@@ -96,7 +96,7 @@ class Fun:
     @commands.command()
     async def weeb(self, ctx, type=None):
         '''Fetch a type from weeb.sh. Call without args to get a list of types.'''
-        head = {'Authorization': f'Bearer {self.config.weebsh}'}
+        head = {'Authorization': f'Wolke {self.config.weebsh}'}
         types = self.config.weebtypes['types']
         if type:
             if type in types:
