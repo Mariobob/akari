@@ -24,7 +24,7 @@ class Checks:
             f.write('\n'.join(blacklist))
             self.config.blacklist = blacklist
 
-    @commands.group()
+    @commands.group(hidden=True)
     @commands.is_owner()
     async def blacklist(self, ctx):
         if ctx.invoked_subcommand is None:

@@ -30,6 +30,7 @@ class Base:
 
     @commands.command(aliases=['info'], name='botinfo')
     async def _display_bot_info(self, ctx):
+        '''Displays information about the bot.'''
         e = discord.Embed(color=ctx.author.color, description='A weeb bot for all your weeb needs and whatnot')
         e.set_author(name='Akari - Bot Info', url='https://akaribot.tk', icon_url=ctx.guild.me.avatar_url)
         e.add_field(name='Owner', value=f'Made by {self.bot.get_user(266277541646434305).name} with :heart:')

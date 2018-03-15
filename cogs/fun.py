@@ -32,27 +32,46 @@ class Fun:
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=head) as response:
                 if response.status == 200:
-                    data = await response.json()
+                    data = response
                     return data
                 raise Exception(response.status)
     
     @commands.command()
     async def xkcd(self, ctx, number: int=None):
+        '''Get an xkcd comic.'''
         if number and isinstance(number, int):
             r = await self.get(url=f'https://xkcd.com/{number}/info.0.json')
         elif number:
             return await ctx.send('That\'s not a valid number!')
         else:
-            r = await self.get(url='https://xkcd.com/info.0.json')
+            raw = await self.get(url='https://xkcd.com/info.0.json')
+            r = await raw.json()
         
         e = discord.Embed(title=r['safe_title'], description='xkcd - {}\n\n{}'.format(r['num'], r['alt']), color=ctx.author.color)
         e.set_image(url=r['img'])
         e.set_footer(text=f'{r["month"]}/{r["day"]}/{r["year"]} (mm/dd/yyyy)', icon_url='https://i.imgur.com/9sSBA52.jpg')
         await ctx.send(embed=e)
 
+    @commands.command()
+    async def waifuinsult(self, ctx, user: discord.User=None):
+        '''Insult your own(or somebody elses) waifu'''
+        if not user:
+            user = ctx.author
+        async with ctx.typing():
+            async with aiohttp.ClientSession() as session:
+                async with session.post('https://api.weeb.sh/auto-image/waifu-insult', headers={'Authorization': f'Wolke {self.config.weebsh}'}, data={'avatar': user.avatar_url}) as response:
+                    t = await response.read()
+                
+                    with open("res.png", "wb") as f:
+                        f.write(t)
+                
+                    with open("res.png", "rb") as f:
+                        await ctx.send(file=discord.File(fp=f))
+
+
     @commands.command(aliases=['c', 'cbot'])
     async def clever(self, ctx, *, message):
-        '''Say something to cleverbot.'''
+        '''Say something to cleverbot.''' 
         async with ctx.typing():
             await ctx.send(self.cw.say(message))
 
@@ -62,6 +81,7 @@ class Fun:
         
         try:
             fact = await self.get(url='https://catfact.ninja/fact')
+            fact = await fact.json()
             e = discord.Embed(color=ctx.author.color, description=fact['fact'])
         except:
             self.bot.raven.CaptureException()
@@ -69,6 +89,7 @@ class Fun:
         
         try:
             resp = await self.get(url='https://random.cat/meow')
+            resp = await resp.json()
             e.set_image(url=resp['file'])
         except:
             self.bot.raven.CaptureException()
@@ -82,8 +103,19 @@ class Fun:
         '''Get a random dog image.'''
         e = discord.Embed(color=ctx.author.color)
         resp = await self.get(url='https://random.dog/woof.json')
+        resp = await resp.json()
         e.set_image(url=resp['url'])
         e.set_footer(text='Powered by random.dog')
+        await ctx.send(embed=e)
+
+    @commands.command()
+    async def birb(self, ctx):
+        '''Get a random birb image.'''
+        e = discord.Embed(color=ctx.author.color)
+        resp = await self.get(url='https://random.birb.pw/tweet.json')
+        resp = await resp.json(content_type='text/plain')
+        e.set_image(url=f'https://random.birb.pw/img/{resp["file"]}')
+        e.set_footer(text='Powered by random.birb.pw')
         await ctx.send(embed=e)
 
     @commands.command()
@@ -91,6 +123,7 @@ class Fun:
         '''Gets a random neko :3'''
         e = discord.Embed(color=ctx.author.color)
         resp = await self.get(url='https://nekos.life/api/neko')
+        resp = await resp.json()
         e.set_image(url=resp['neko'])
         e.set_footer(text='Powered by nekos.life')
         await ctx.send(embed=e)
@@ -101,6 +134,7 @@ class Fun:
         '''Gets a random lewd neko o.o'''
         e = discord.Embed(color=ctx.author.color)
         resp = await self.get(url='https://nekos.life/api/lewd/neko')
+        resp = await resp.json()
         e.set_image(url=resp['neko'])
         e.set_footer(text='Powered by nekos.life')
         await ctx.send(embed=e)
@@ -116,6 +150,7 @@ class Fun:
             if type in types:
                 e = discord.Embed(color=ctx.author.color)
                 resp = await self.get(url=f'https://api.weeb.sh/images/random?type={type}', head=head)
+                resp = await resp.json()
                 e.set_image(url=resp['url'])
                 e.set_footer(text='Powered by weeb.sh')
                 await ctx.send(embed=e)
@@ -128,6 +163,7 @@ class Fun:
     async def osu(self, ctx, *, user):
         try:
             respraw = await self.get(url=f'https://osu.ppy.sh/api/get_user?k={self.config.osu}&u={user}')
+            respraw = await respraw.json()
             resp = respraw[0]
         except Exception as e:
             await ctx.send(f'S-something went wrong!\n```py\n{e}```')

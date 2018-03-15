@@ -8,14 +8,14 @@ import aiohttp
 import asyncio
 from raven import Client
 
-client = Client('https://26fff40793b8492a9d51ec6c7fa42190:3acee939fbbb4e9e83ce1b0386d19f16@sentry.io/290132')
+client = Client(config.raven)
 
 class Bot(commands.AutoShardedBot):
     def __init__(self, **kwargs):
         self.config = config
         self.session = aiohttp.ClientSession()
         self.raven = client
-        super().__init__(command_prefix=commands.when_mentioned_or('=>'), **kwargs)
+        super().__init__(command_prefix=commands.when_mentioned_or('=>'), pm_help=True, **kwargs)
         for cog in config.cogs:
             try:
                 self.load_extension(cog)
@@ -24,7 +24,7 @@ class Bot(commands.AutoShardedBot):
 
     async def on_ready(self):
         print('Logged on as {0} (ID: {0.id})'.format(self.user))
-        await bot.change_presence(game=discord.Game(name="=>help | Akarin!"))
+        await bot.change_presence(activity=discord.Activity(name="=>help | Akarin!", type=1))
 
 bot = Bot()
 
