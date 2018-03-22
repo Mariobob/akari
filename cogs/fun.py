@@ -8,6 +8,8 @@ import random
 import aiohttp
 import asyncio
 import functools
+from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
 
 class Fun:
     """Fun stuff."""
@@ -53,6 +55,24 @@ class Fun:
         await ctx.send(embed=e)
 
     @commands.command()
+    async def ship(self, ctx, user: discord.User, user2: discord.User):
+        '''Ships 2 people'''
+        async with aiohttp.ClientSession() as session:
+            async with session.post('https://api.weeb.sh/auto-image/love-ship', headers={'Authorization': f'Wolke {self.config.weebsh}'}, data={'targetOne': user.avatar_url, 'targetTwo': user2.avatar_url}) as response:
+                t = await response.read()
+                
+                with open("ship.png", "wb") as f:
+                    f.write(t)
+                
+                with open("ship.png", "rb") as f:
+                    if random.randint(0, 1) == 0:
+                        pf = random.randint(0, 100)
+                    else:
+                        pf = fuzz.ratio(user.name, user2.name)
+                    p = f'[{"".join("#" for x in range(round(pf/10)))}{"".join(" " for x in range(10-round(pf/10)))}] {pf}%'
+                    await ctx.send(f'**{user.name}** x **{user2.name}**\nLove Meter: \n`{p}`', file=discord.File(fp=f))
+
+    @commands.command()
     async def waifuinsult(self, ctx, user: discord.User=None):
         '''Insult your own(or somebody elses) waifu'''
         if not user:
@@ -62,10 +82,10 @@ class Fun:
                 async with session.post('https://api.weeb.sh/auto-image/waifu-insult', headers={'Authorization': f'Wolke {self.config.weebsh}'}, data={'avatar': user.avatar_url}) as response:
                     t = await response.read()
                 
-                    with open("res.png", "wb") as f:
+                    with open("waifuinsult.png", "wb") as f:
                         f.write(t)
                 
-                    with open("res.png", "rb") as f:
+                    with open("waifuinsult.png", "rb") as f:
                         await ctx.send(file=discord.File(fp=f))
 
 
