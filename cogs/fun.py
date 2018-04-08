@@ -108,7 +108,7 @@ class Fun:
             await ctx.send('Something went wrong while getting your cat fact!')
         
         try:
-            resp = await self.get(url='https://random.cat/meow')
+            resp = await self.get(url='http://aws.random.cat/meow')
             resp = await resp.json()
             e.set_image(url=resp['file'])
         except:

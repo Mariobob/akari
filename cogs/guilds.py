@@ -3,13 +3,15 @@
 from discord.ext import commands
 import discord
 import ujson
+import asyncio
 
 class Guilds:
     def __init__(self, bot):
         self.bot = bot
+        self.config = bot.config
 
     async def update_guild_count(self):
-        await self.bot.change_presence(activity=discord.Activity(name=f'{config.prefixes[0]}help | {len(self.guilds)} guilds', type=discord.ActivityType.listening))
+        await self.bot.change_presence(activity=discord.Activity(name=f'=>help | {len(self.bot.guilds)} guilds', type=discord.ActivityType.listening))
         payload = {'server_count': sum(1 for g in self.bot.guilds)}
         await self.bot.session.request('POST', f'https://ls.terminal.ink/api/v1/bots/{self.bot.user.id}', data=ujson.dumps(payload, ensure_ascii=True),
         headers={'Content-Type': 'application/json', 'Authorization': self.bot.config.dbl})
